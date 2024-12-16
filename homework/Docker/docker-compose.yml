@@ -1,0 +1,43 @@
+
+version: '3'
+services:
+  traefik-proxy:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+   # env_file:
+   #   - traefik.env
+    ports:
+      - 80:80
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ~/traefik/logs/:/var/log/traefik/
+      - ~/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ~/traefik/config/:/etc/traefik/config/:ro
+      - ~/traefik/cert/:/etc/traefik/cert/:ro
+      - ~/traefik/secret:/etc/traefik/secret:ro
+      - ~/traefik/acme.json:/etc/traefik/acme.json
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-http-router.entrypoints=http"
+      - "traefik.http.routers.traefik-http-router.rule=Host(`traefik.example.com`) &&
+	     (PathPrefix(`/traefik`) ||
+		  Headers(`Referer`, `http://traefik.example.com:80/traefik/dashboard/`))"
+      - "traefik.http.routers.traefik-http-router.tls=true"
+      - "traefik.http.routers.traefik-http-router.service=api@internal"
+      - "traefik.http.routers.traefik-http-router.middlewares=traefik-mw-auth,traefik-mw-strip"
+      - "traefik.http.middlewares.traefik-auth.basicauth.usersFile=/etc/traefik/secret"
+      - "traefik.http.middlewares.traefik-strip.stripprefix.prefixes=/traefik"
+      # SANs
+      #- "traefik.http.routers.traefik-http-router.tls.certresolver=myresolver"
+      - "traefik.http.routers.traefik-http-router.tls.domains[0].main=traefik.example.com"
+      - "traefik.http.routers.traefik-http-router.tls.domains[0].sans=traefik.example.com"
+    networks:
+      traefik-bridge:
+#        ipv4_address: 192.168.100.100
+networks:
+  traefik-bridge:
+    name: traefik

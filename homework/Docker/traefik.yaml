@@ -1,0 +1,44 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+log:
+  level: DEBUG # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: common # common, json, logfmt
+  filePath: /var/log/traefik/traefik.log
+accesslog:
+  format: common # common, json, logfmt
+  filePath: /var/log/traefik/access.log
+api:
+  dashboard: true
+entryPoints:
+  http:
+    address: ":80"
+    #http:
+     # redirections:
+     #   entryPoint:
+     #     to: https
+     #     scheme: https
+  #https:
+   # address: ":443"
+serversTransport:
+  insecureSkipVerify: true
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+  file:
+    directory: ~/traefik/dinamic.yml
+    watch: true
+certificatesResolvers:
+  myresolver:
+    acme:
+      email: your-email@example.com
+      storage: acme.json
+      dnsChallenge:
+        provider: example.com
+        resolvers:
+          - "0.0.0.0:80"
+          - "1.1.1.1:80"
+          
+log
+  
