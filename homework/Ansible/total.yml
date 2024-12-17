@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  roles:
+    - ssh_keygen.yml
+      
+- hosts: deb
+  roles:
+    - user.yml
+    - copyssh.yml
+    - sshdconfig.yml

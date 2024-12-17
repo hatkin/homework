@@ -1,0 +1,25 @@
+---
+- name: change sshdconfig
+  hosts: all
+  become: yes
+  tasks:
+  - name: Copy file.
+    copy:
+     src: "/etc/ssh/sshd_config"
+     dest: "/etc/ssh/sshd_config.old"
+  - name: template_block
+    template:
+      src: "templates/sshd_config.j2"
+      dest: "/etc/ssh/sshd_config"
+
+  vars:
+    cas: "ecdsa-sha2-nistp521,ssh-ed25519"
+    Pass: "no"
+    root: "no"
+    port: "52121"
+    AuthTries: "3"
+    Allow: "user"
+      
+      
+      
+      
