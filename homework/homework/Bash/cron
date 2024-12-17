@@ -1,6 +1,0 @@
-
-sudo adduser backupuser
-sudo crontab -u backupuser -e
-
-
-0 */2 * * * /path/to/backup.sh >> /var/log/backup.log 2>&1

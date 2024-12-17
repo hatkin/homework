@@ -1,9 +1,0 @@
----
-- name: copy ssh
-  hosts: all
-  tasks:
-    - name: Copy public key
-      authorized_key:
-        user: user
-        state: present
-        key: "{{ lookup('file', '/home/user/.ssh/private_key.pub') }}"
