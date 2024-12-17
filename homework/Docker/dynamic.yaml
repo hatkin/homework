@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  traefik:
+    image: traefik:v2.5
+    command:
+      - "--api.insecure=true"
+      - "--providers.file.filename=~/GIT/Docker/dynamic.yaml"  
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"  # Для доступа к панели управления Traefik
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"  # Для доступа к Docker
+
+  whoami:
+    image: traefik/whoami
