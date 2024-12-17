@@ -1,51 +1,17 @@
-http:
+version: '3'
 
-  routers:
-    entryPoints:
-      - "http"
-    rule: "Host('traefik.example.com')"
-    middlewares:
-      - default-headers
-     # - https-redirect
-    tls: {}
-    service: example
-  
-  
-  services:
-    example:
-      loadBalancer:
-        servers:
-          -url: "https://ip:8000"
-        passHostHeader: true
-        
-  middlewares:
-  #  https-redirect:
-  #    redirectScheme:
-  #      scheme: https
-  #      permanent: true
-    
-    default-headers:
-      headers:
-        frameDeny: true
-        browserXssFilter: true
-        contentTypeNosniff: true
-        forceSTSHeader: true
-        stsIncludeSubdomains: true
-        stsPreload: true
-        stsSeconds: 15552000
-        customFrameOptionsValue: SAMEORIGIN
-        customRequestHeaders:
-          X-Forwarded-Proto: http
-          
-    default-whitelist:
-      ipAllowList:
-        sourceRange:
-        - "10.0.0.0/8"
-        - "192.168.0.0/16"
-        - "172.16.0.0/12"
-        
-    secured:
-      chain:
-        middlewares:
-        - default-whitelist
-        - default-headers
+services:
+  traefik:
+    image: traefik:v2.5
+    command:
+      - "--api.insecure=true"
+      - "--providers.file.filename=~/GIT/Docker/dynamic.yaml"  
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"  # Для доступа к панели управления Traefik
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"  # Для доступа к Docker
+
+  whoami:
+    image: traefik/whoami
